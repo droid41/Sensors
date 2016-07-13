@@ -13,40 +13,36 @@ class Writer:
 		print "Relative Humidity is : %.2f %%" %humidity
 		print "Temperature in Celsius is : %.2f C" %cTemp
 
-		now = int(datetime.datetime.today().strftime('%s'))
-    	
-    		series = []
+		d = datetime.datetime.now()
 
-		hostName = "raspberryHA"
-	        tempPointValues = {
-        	        "time": now,
-                	"measurement": "temp",
-	                'fields':  {
-        	            'value': cTemp,
-	                },
-        	        'tags': {
-                	    "hostName": hostName,
-	                },
-        	    }
-	        series.append(tempPointValues)
+		data = []
+		data.append({
+			'points': [[time.mktime(d.timetuple()),cTemp, humidity]],
+			'name': 'temp',
+			'columns': ['time', 'temp', 'hum']
+		})
 
-		humPointValues = {
-                        "time": now,
-                        "measurement": "hum",
-                        'fields':  {
-                            'value': humidity,
-                        },
-                        'tags': {
-                            "hostName": hostName,
-                        },
-                    }
-                series.append(humPointValues)
+#		now = datetime.datetime.today().isoformat() # .strftime('%s')
+#
+#		print now
+#   	
+#		hostName = "raspberryHA"
+#	        tempPointValue = [{
+#        	        "time": now,
+#                	"measurement": "temp",
+#	                'fields':  {
+#        	            'temp': cTemp,
+#			    'hum': humidity,
+#	                },
+#        	        'tags': {
+#                	    "hostName": hostName,
+#	                },
+#        	    }]
 
-		print series
-
+		print data
 
 		client = InfluxDBClient('localhost', 8086, 'root', 'root', 'TempHum')
-		result = client.write_points(series)
+		result = client.write_points(data)
 		print result
 		print("Result: {0}".format(result))
 
